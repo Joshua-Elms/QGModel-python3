@@ -15,6 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with QGModel.  If not, see <http://www.gnu.org/licenses/>.
 
+# only changes made: add // to division to make it work with python 3
+# also change shape of arrays in np.linalg.solve on line 145
+
+
 
 import sys
 import os
@@ -93,7 +97,7 @@ class Model:
     def grid(self):
         """Set up spectral and physical grid."""
         # Set up spectral grid.
-        k = abs(np.fft.fftfreq(self.n, d=self.a/(2*np.pi*self.n))[:self.n/2+1])
+        k = abs(np.fft.fftfreq(self.n, d=self.a/(2*np.pi*self.n))[:self.n//2+1])
         l = np.fft.fftfreq(self.n, d=self.a/(2*np.pi*self.n))
         self.k = k[np.newaxis,:,np.newaxis]
         self.l = l[:,np.newaxis,np.newaxis]
@@ -138,7 +142,8 @@ class Model:
             u q'_x + v q'_y + u' q_x + v' q_y + J(p', q')
         """
         # Perform inversion.
-        p = np.linalg.solve(self.L, q)
+        p = np.linalg.solve(self.L, q[...,np.newaxis])
+        p = p.squeeze(-1)
         # Calculate RHS.
         rhs = \
             - 1j * (self.k*self.u + self.l*self.v) * q \
@@ -163,16 +168,16 @@ class Model:
     def fft_truncate(self, up):
         """Perform forward FFT on physical field up and truncate (3/2 rule)."""
         us = self.rfft2(up, axes=(0, 1))
-        u = np.zeros((self.n, self.n/2 + 1, self.nz), dtype=complex)
-        u[: self.n/2, :, :] = us[: self.n/2, : self.n/2 + 1, :]
-        u[self.n/2 :, :, :] = us[self.n : 3*self.n/2, : self.n/2 + 1, :]
+        u = np.zeros((self.n, self.n//2 + 1, self.nz), dtype=complex)
+        u[: self.n//2, :, :] = us[: self.n//2, : self.n//2 + 1, :]
+        u[self.n//2 :, :, :] = us[self.n : 3*self.n//2, : self.n//2 + 1, :]
         return u/2.25  # accounting for normalization
 
     def ifft_pad(self, u):
         """Pad spectral field u (3/2 rule) and perform inverse FFT."""
-        us = np.zeros((3*self.n/2, 3*self.n/4 + 1, self.nz), dtype=complex)
-        us[: self.n/2, : self.n/2 + 1, :] = u[: self.n/2, :, :]
-        us[self.n : 3*self.n/2, : self.n/2 + 1, :] = u[self.n/2 :, :, :]
+        us = np.zeros((3*self.n//2, 3*self.n//4 + 1, self.nz), dtype=complex)
+        us[: self.n//2, : self.n//2 + 1, :] = u[: self.n//2, :, :]
+        us[self.n : 3*self.n//2, : self.n//2 + 1, :] = u[self.n//2 :, :, :]
         return self.irfft2(2.25*us, axes=(0, 1))
 
     def rfft2(self, u, axes=(-2,-1)):
@@ -197,9 +202,9 @@ class Model:
         """Double the resolution, interpolate fields."""
         self.n *= 2
         # Pad spectral field.
-        qs = np.zeros((self.n, self.n/2 + 1, self.nz), dtype=complex)
-        qs[: self.n/4, : self.n/4 + 1, :] = self.q[: self.n/4, :, :]
-        qs[3*self.n/4 : self.n, : self.n/4 + 1, :] = self.q[self.n/4 :, :, :]
+        qs = np.zeros((self.n, self.n//2 + 1, self.nz), dtype=complex)
+        qs[: self.n//4, : self.n/4 + 1, :] = self.q[: self.n//4, :, :]
+        qs[3*self.n//4 : self.n, : self.n//4 + 1, :] = self.q[self.n//4 :, :, :]
         # Account for normalization.
         self.q = 4*qs
         # Update grid.
@@ -241,7 +246,7 @@ class Model:
         if not os.path.isdir(name + '/data'):
             os.makedirs(name + '/data')
         # Save.
-        with open(name + '/data/{:015.0f}'.format(self.clock), 'w') as f:
+        with open(name + '/data/{:015.0f}'.format(self.clock), 'wb') as f:
             pickle.dump(self, f)
 
 

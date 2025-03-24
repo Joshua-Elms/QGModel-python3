@@ -17,3 +17,13 @@ At the moment, seven model types have been implemented:
 See `run.py` for an example of how a model is initialized and run.
 
 This model makes use of [PyFFTW](https://pypi.python.org/pypi/pyFFTW), a Python wrapper of [FFTW](http://www.fftw.org/). Follow the [installation instructions](https://github.com/hgomersall/pyFFTW) for PyFFTW if you do not have it installed already. PyFFTW will speed up the code and allows multi-threading, but the model will also run with standard numpy FFT routines.
+
+## Environment Setup w/ Conda
+```
+conda create -n qgmodel
+conda activate qgmodel
+conda install python
+conda install -c conda-forge pyfftw matplotlib
+```
+
+Then you can run `python run.py` to start
