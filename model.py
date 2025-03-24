@@ -15,8 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with QGModel.  If not, see <http://www.gnu.org/licenses/>.
 
-# only changes made: add // to division to make it work with python 3
-# also change shape of arrays in np.linalg.solve on line 145
+# only changes made: 
+### add // to division to make it work with python 3
+### also change shape of arrays in np.linalg.solve on line 146
+### save data using binary format requires 'wb' instead of 'w' on line 251
 
 
 
