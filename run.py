@@ -40,13 +40,13 @@ import model
 #m = model.Surface()
 #m.initmean(1e-4, 8e-4, 1e-4, 0)
 
-#folder = 'two-layer'
-#m = model.Layered(2)
-#m.initmean(1e-4, 2*[250.], [1.6e-2], [2.5e-2, 0.], 2*[0.], 0.)
+folder = 'two-layer'
+m = model.Layered(2)
+m.initmean(1e-4, 2*[250.], [1.6e-2], [2.5e-2, 0.], 2*[0.], 0.)
 
-folder = 'eady'
-m = model.Eady()
-m.initmean(1e-4, 8e-3, 500., 1e-4, 0.)
+# folder = 'eady'
+# m = model.Eady()
+# m.initmean(1e-4, 8e-3, 500., 1e-4, 0.)
 
 #folder = 'fleady'
 #m = model.FloatingEady()
@@ -56,9 +56,9 @@ m.initmean(1e-4, 8e-3, 500., 1e-4, 0.)
 #m = model.TwoEady()
 #m.initmean(1e-4, [2e-3, 8e-3], [100., 400.], [1e-4, 1e-4], [0., 0.])
 
-#folder = 'two-eady-jump'
-#m = model.TwoEadyJump()
-#m.initmean(1e-4, [2e-3, 8e-3], [100., 400.], 4e-3, [1e-4, 1e-4], [0., 0.],
+# folder = 'two-eady-jump'
+# m = model.TwoEadyJump()
+# m.initmean(1e-4, [2e-3, 8e-3], [100., 400.], 4e-3, [1e-4, 1e-4], [0., 0.],
 #    2e-2, 0)
 
 # Perform linear stability analysis.  This is an example of how to
@@ -75,7 +75,7 @@ ax[1].semilogx(k / (2*np.pi), np.imag(w[0,:,:]))
 ax[0].set_ylabel('phase speed')
 ax[1].set_ylabel('growth rate')
 ax[1].set_xlabel('inverse wavelength')
-plt.show()
+plt.savefig(f'linstab_{folder}.png')
 
 # Set up the numerics: Here we initialize the numerics, specifying
 # domain size, resolution and time step.  Note that initnum must always
